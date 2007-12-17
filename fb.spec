@@ -11,7 +11,6 @@ Source0: fb_tar.bz2
 Source1: http://home.mho.net/jswaby/fb_exmp.html
 Group: File tools
 URL: http://home.mho.net/jswaby/fb.html 
-Buildroot: %{_tmppath}/%{name}-buildroot
 
 %description
 fb is a binary file viewer, editor, and manipulator. It can be used as a 
