@@ -1,6 +1,6 @@
 %define name fb
 %define version 1.5
-%define release %mkrel 12
+%define release %mkrel 13
 
 Summary: Utility for the viewing, editing, and manipulation of binary files
 Name: %{name}
