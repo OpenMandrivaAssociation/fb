@@ -26,7 +26,7 @@ Author: John Howard Swaby <polymath@uwyo.edu>
 %prep 
 
 %setup0 -q -c 
-cp $RPM_SOURCE_DIR/fb_exmp.html $RPM_BUILD_DIR/$RPM_PACKAGE_NAME-$RPM_PACKAGE_VERSION
+cp $RPM_SOURCE_DIR/fb_exmp.html %{_builddir}/$RPM_PACKAGE_NAME-$RPM_PACKAGE_VERSION
 
 %build
 cc $RPM_OPT_FLAGS fb.c -o fb
