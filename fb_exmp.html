@@ -1,0 +1,270 @@
+<!-- X-URL: http://home.mho.net/jswaby/fb_exmp.html -->
+<!-- Date: Fri, 07 May 1999 15:09:58 GMT -->
+<BASE HREF="http://home.mho.net/jswaby/fb_exmp.html">
+
+<HTML>
+<BODY>
+<BODY TEXT="#000000" BGCOLOR="#008080">
+<BR>
+<H3>Example 1: Comparing Two Files</H3>
+<P><B><TT>fb h File1 File2</TT></B></P>
+<TT>
+<PRE>
+      8514:  5 FD
+     41145: D1  0
+     41146:  A 6E
+    598002: 9A B3
+    598818:  EOF  :1902318
+</PRE>
+</TT>
+<P>The output reports the offsets where the two files differ and their
+differences in hexadecimal.  Since the files differ in length, the last line
+of the output reports their respective file lengths.</P>
+<P>For Linux/UNIX users: "<B><TT>fb o File1 File2</TT></B>" is similar to
+"<B><TT>cmp -l File1 File2</TT></B>"; however, be aware that <B>cmp</B>
+starts counting bytes from 1 rather than 0 as <B>fb</B> and <B>od</B> do.
+Also "<B><TT>fb . File1 File2</TT></B>" is similar to "cmp -s File1 File2".
+<HR><H3>Example 2: Searching with grep</H3>
+<B><TT>fb -blnks -p 1 -i 6 File | grep 1100000011</TT></B>
+<P>will find occurances of the bit pattern <B><TT>1100000011</TT></B>.
+Explanation: (1) "-b" will (by default) show 8 bytes per row.  (2) The bit
+pattern <B><TT>1100000011</TT></B> could span 3 bytes.  (3) Thus the
+increment must be 6 ("<B><TT>-i 6</TT></B>") in order not to miss cases where
+the 3 bytes start in one row but end in the next row.
+<HR>
+<H3>Example 3: Removing Carriage Returns from DOS Files</H3>
+<H4>Linux/UNIX:</H4>
+<B><TT>fb -lans File.txt | sed s/0D//g | fb th File.unx</TT></B>
+<H4>Windows 95, 98, & NT:</H4>
+(1) <B><TT>fb -lans File.txt > File.unx</TT></B>
+<P>(2) Edit <B><TT>File.unx</TT></B> so as to remove all occurances of
+"<TT> 0D</TT>".</P>
+<P>(3) <B><TT>fb t h File.unx</TT></B></P>
+<P>The new file, File.unx, will have no carriage returns.
+<P>For Linux/UNIX users: <B>fb</B> will also translate dumps made with
+<B>od</B> since when <B>fb</B> reads hexadecimal numbers it is not sensitive
+to case.
+"<B><TT>fb -lans File</TT></B>" is similar to
+"<B><TT>od -An -v -tx1 File</TT></B>"; "<B><TT>fb -lands File</TT></B>" is
+similar to "<B><TT>od -An -v -tu1 File</TT></B>"; and
+"<B><TT>fb -loans File</TT></B>" is similar to
+"<B><TT>od -An -v -to1 File</TT></B>".  All of these outputs can be
+translated by <B>fb</B>; but, in addition, <B>fb</B> can translate a file of
+the format produced by "<B><TT>fb -blans File</TT></B>", which is a dump in
+binary numbers.  And <B>fb</B> can translate a file wherein the numbers are
+not delimited (or there is a mixure of some delimited and some not).  Adding
+the <B>-k</B> option to any of the <B>fb</B> examples above will
+result in the dump having no spaces between numbers.
+<HR>
+<H3>Example 4: Browsing Small Files</H3>
+If a file is less than 256 bytes (or less than 128 bytes with the <B>-b</B>
+option or less than 1024 bytes with the <B>-c</B> option), use the
+<B>-p</B> option.  For example suppose File is 123 bytes in size.
+ One way to browse this file is to start <B>fb</B> like so:
+<P><CENTER><B><TT>fb -p 10.10 -i 23 File</TT></B></CENTER></P>
+This will display the first 100 bytes of the file.  To view the remaining 23
+bytes simply press <B>ENTER</B>.  This will display the last 100 bytes of the
+file.  Then enter the command "<B>-</B>" to alternate between the
+first and last 100 bytes of the file.
+<HR>
+<H3>Example 5: Deleting a Portion of a File</H3>
+Use the script <B>delete</B> (see below under Linux/UNIX) or the batch file
+<B>delete.bat</B> (see below under Windows 95, 98, &amp NT) like so:
+<P><CENTER><B><TT>delete Offset1 Offset2 File1 File2</TT></B></CENTER>
+<P>to delete bytes starting at Offset1 and stopping at Offset2 from file
+File1, writing the result to File2.  File1 is not changed.
+<P>For example to delete 100 bytes from File1 starting at offset position
+1000, writing the result to File2, execute the command:
+<P><CENTER><B><TT>delete 1000 1100 File1 File2</TT></B></CENTER>
+<H4>Linux/UNIX:</H4>
+<TT>
+<PRE>
+#!/bin/bash
+# delete
+fb c .$1 $3 $4
+fb a $2 $3 $4
+</PRE>
+</TT>
+<H4>Windows 95, 98, &amp NT:</H4>
+<TT>
+<PRE>
+@echo off
+rem delete.bat
+fb c .%1 %3 %4
+fb a %2 %3 %4
+</PRE>
+</TT>
+<P>Note: adding a usage statement and error checking to either the script
+or batch file is left as an exercise.
+<HR>
+<H3>Example 6: Inserting a File Into Itself or Another File</H3>
+Use the script <B>insert</B> (see below under Linux/UNIX) or the batch file
+<B>insert.bat</B> (see below under Windows 95, 98, &amp NT) like so:
+<P><CENTER><B><TT>insert File1 Offset File1|File2 File3</TT></B></CENTER>
+<P>to insert File1 into either File1 or File2 at offset position Offset and
+write the result to File3.  File1 and optional File2 are not changed.
+<P>For example to insert File1 into File2 at offset position 1000, writing
+the result to File3, execute the command:
+<P><CENTER><B><TT>insert File1 1000 File2 File3</TT></B></CENTER>
+<H4>Linux/UNIX:</H4>
+<TT>
+<PRE>
+#!/bin/bash
+# insert
+fb c .$2 $3 $4
+fb a . $1 $4
+fb a $2 $3 $4
+</PRE>
+</TT>
+<H4>Windows 95, 98, &amp NT:</H4>
+<TT>
+<PRE>
+@echo off
+rem insert.bat
+fb c .%2 %3 %4
+fb a . %1 %4
+fb a %2 %3 %4
+</PRE>
+</TT>
+<P>Note: adding a usage statement and error checking to either the script or
+batch file is left as an exercise.
+<HR>
+<H3>Example 7: Creating/Editing a Bit Map File Using Translate</H3>
+<P>The following are the contents of the description file <B>net.fbb</B> and
+the Windows bit-map file <B>net.bmp</B> created when <B>fb</B> translates
+<B>net.fbb</B>.  To do this <B>fb</B> is invoked like so:</P>
+<P><CENTER><B><TT>fb t b net.fbb net.bmp</TT></B></CENTER></P>
+<P><CENTER>- or -</CENTER></P>
+<P><CENTER><B><TT>fb tb net.bmp &lt net.fbb</TT></B></CENTER></P>
+<P>The file net.fbb:
+<TT>
+<PRE>
+| net.fbb
+| Author: John Swaby
+|   Date: 17 October 1998
+
+| This file should be translated by fb t b(inary)
+
+| Header information:
+ | Type of file
+  01000010 01001101 | BM (Bit Map)
+
+ | Size of file: 190
+ |     190 +  256*0 + 65535*0 + 16777200*0
+  10111110 00000000  00000000     00000000
+
+  00000000 00000000 00000000 00000000
+
+ | Length of header: 62
+  00111110 00000000 00000000 00000000
+
+  00101000 00000000 00000000 00000000 | 40 0 0 0
+  00100000 00000000 00000000 00000000 | 32 0 0 0
+  00100000 00000000 00000000 00000000 | 32 0 0 0
+  00000001 00000000 00000001 00000000 |  1 0 1 0
+  00000000 00000000 00000000 00000000
+  10000000 00000000 00000000 00000000 | 128  0 0 0
+  00010011 00001011 00000000 00000000 |  19 11 0 0
+  00010011 00001011 00000000 00000000 |  19 11 0 0
+  00000010 00000000 00000000 00000000 |   2  0 0 0
+  00000010 00000000 00000000 00000000 |   2  0 0 0
+
+ | Background color (0's):
+ |Blue: 64 Green:64 Red: 0   Unused
+  01000000 01000000 00000000 00000000
+
+ | Foreground color (1's):
+ |Blue:160 Green:150 Red: 0   Unused
+  10100000 10010110  00000000 00000000
+
+| Bit map:
+01111111111111000011111111111110
+10111111111111000011111111111101
+11011111111111111111111111111011
+11101111111111111111111111110111
+11110111111111111111111111101111
+11111011111111111111111111011111
+11111101111111111111111110111111
+11111110111111111111111101111111
+11111111100000000000000111111111
+11111111010000000000001011111111
+11111111001000000000010011111111
+11111111000100000000100011111111
+11111111000010000001000011111111
+11111111000001000010000011111111
+00111111000000111100000011111100
+00111111000000111100000011111100
+00111111000000111100000011111100
+00111111000000111100000011111100
+11111111000001000010000011111111
+11111111000010000001000011111111
+11111111000100000000100011111111
+11111111001000000000010011111111
+11111111010000000000001011111111
+11111111100000000000000111111111
+11111110111111111111111101111111
+11111101111111111111111110111111
+11111011111111111111111111011111
+11110111111111111111111111101111
+11101111111111111111111111110111
+11011111111111111111111111111011
+10111111111111000011111111111101
+01111111111111000011111111111110
+| end of file: net.fbb
+</PRE>
+</TT>
+<P>The file net.bmp in two parts: header and bit map.</P>
+<P>The header: <B><TT>fb -dn -r .62 -p .6 net.bmp</TT></B></P>
+<TT>
+<PRE>
+   [  0   1   2   3   4   5]
+00: 066 077 190 000 000 000
+06: 000 000 000 000 062 000
+12: 000 000 040 000 000 000
+18: 032 000 000 000 032 000
+24: 000 000 001 000 001 000
+30: 000 000 000 000 128 000
+36: 000 000 019 011 000 000
+42: 019 011 000 000 002 000
+48: 000 000 002 000 000 000
+54: 064 064 000 000 160 150
+60: 000 000
+</PRE>
+</TT>
+<P>The bit map: <B><TT>fb -blnks -p .4 -r 62 net.bmp</TT></B></P>
+<TT>
+<PRE>
+062:01111111111111000011111111111110
+066:10111111111111000011111111111101
+070:11011111111111111111111111111011
+074:11101111111111111111111111110111
+078:11110111111111111111111111101111
+082:11111011111111111111111111011111
+086:11111101111111111111111110111111
+090:11111110111111111111111101111111
+094:11111111100000000000000111111111
+098:11111111010000000000001011111111
+102:11111111001000000000010011111111
+106:11111111000100000000100011111111
+110:11111111000010000001000011111111
+114:11111111000001000010000011111111
+118:00111111000000111100000011111100
+122:00111111000000111100000011111100
+126:00111111000000111100000011111100
+130:00111111000000111100000011111100
+134:11111111000001000010000011111111
+138:11111111000010000001000011111111
+142:11111111000100000000100011111111
+146:11111111001000000000010011111111
+150:11111111010000000000001011111111
+154:11111111100000000000000111111111
+158:11111110111111111111111101111111
+162:11111101111111111111111110111111
+166:11111011111111111111111111011111
+170:11110111111111111111111111101111
+174:11101111111111111111111111110111
+178:11011111111111111111111111111011
+182:10111111111111000011111111111101
+186:01111111111111000011111111111110
+</PRE>
+</TT>
