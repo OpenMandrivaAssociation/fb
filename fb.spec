@@ -4,8 +4,8 @@
 
 Summary: Utility for the viewing, editing, and manipulation of binary files
 Name: %{name}
-Version: %{version}
-Release: %{release}
+Version:	2.0.4
+Release:	1
 License: GPLv1
 Source0: fb_tar.bz2
 Source1: fb_exmp.html
