@@ -10,7 +10,7 @@ License: GPLv1
 Source0: fb_tar.bz2
 Source1: fb_exmp.html
 Group: File tools
-URL: http://home.mho.net/jswaby/fb.html 
+URL: https://home.mho.net/jswaby/fb.html 
 
 
 %description
